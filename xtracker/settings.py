@@ -33,6 +33,15 @@ DEBUG = env.bool('DEBUG', default=False)
 ALLOWED_HOSTS = ['*']
 
 
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https?://localhost(:\d+)?$",
+]
+if not DEBUG:
+    CSRF_TRUSTED_ORIGINS = ['https://api.xtracker.jstudio.md']
+    USE_X_FORWARDED_HOST = True
+    USE_X_FORWARDED_PORT = True
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
 
     'drf_spectacular',
+    'corsheaders',
 
     'apps.tracker.apps.TrackerConfig',
 ]
@@ -52,6 +62,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
