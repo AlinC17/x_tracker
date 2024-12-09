@@ -1,0 +1,53 @@
+<style>
+    .datalistOption:hover {
+        background-color: #cccccc;
+        cursor: pointer;
+    }
+</style>
+<div style="overflow: visible">
+<input type="{{ widget.type }}" list="datalist_{{ widget.name }}" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %}>
+<div id="datalist_{{ widget.name }}" style="z-index: 5; top: 202px; display: none; flex-direction: column; gap: 1px; width: 12rem; max-height: 200px; overflow-y: scroll; position: absolute; background-color: #fff; padding: 5px 10px">
+</div>
+</div>
+<script>
+    let registeredTimeout = null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.querySelector('input[name="{{ widget.name }}"]');
+        const dataList = document.querySelector('#datalist_{{ widget.name }}');
+        let hasOptions = false;
+
+        function updateDataList(textInput) {
+            fetch(`{% url 'tracker:suggestions' %}?input=${textInput}`).then(
+                (response) => response.json()
+            ).then((data) => {
+                hasOptions = !!(data && data.length);
+                dataList.innerHTML = data.reduce((accumulator, currentValue) => {
+                    accumulator += `<div class="datalistOption" style="color: #0c0c0c;">${currentValue.value}</div>`
+                    return accumulator;
+                }, '');
+                if(!hasOptions) dataList.style.display = 'none';
+                else dataList.style.display = 'flex';
+            });
+        }
+
+        input.addEventListener('input', function (e) {
+            if (registeredTimeout) clearTimeout(registeredTimeout);
+            registeredTimeout = setTimeout(() => updateDataList(e.target.value), 200);
+        });
+
+        document.addEventListener('click', function (e) {
+            const target = e.target.closest('.datalistOption');
+            if (target) input.value = target.innerHTML;
+        })
+
+        input.addEventListener('focus', function () {
+            if (hasOptions) dataList.style.display = 'flex';
+        });
+
+        input.addEventListener('blur', async function () {
+            await new Promise(r => setTimeout(r, 300));
+            dataList.style.display = 'none';
+        });
+    });
+</script>

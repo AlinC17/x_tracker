@@ -1,0 +1,15 @@
+services:
+  app:
+    image: 'xtracker_app:latest'
+    container_name: 'xtracker_app'
+    network_mode: 'bridge'
+    build:
+      dockerfile: 'Dockerfile'
+    entrypoint: '/app/entrypoint.sh'
+    env_file:
+      - '.env'
+    volumes:
+      - /home/public/x_tracker/static:/app/static
+    ports:
+      - '8000:8000'
+    restart: 'always'
