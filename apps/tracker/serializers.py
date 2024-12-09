@@ -23,7 +23,8 @@ class DeviceDetailSerializer(DeviceSerializer):
         required=True,
         allow_null=False,
         allow_empty=False,
-        write_only=True
+        write_only=True,
+        source='device_model'
     )
     author = UserSerializer(read_only=True)
 
