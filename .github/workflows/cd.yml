@@ -1,0 +1,41 @@
+name: Docker Image CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    name: Deploy build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout update
+      uses: actions/checkout@v4
+
+    - name: Server deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd /apps/x_tracker
+          git pull origin main
+          docker compose up --build -d
+          
+  clear:
+    name: Clear after new build
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clear old builds
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: 22
+          script: docker system prune -a -f
+  
