@@ -11,6 +11,7 @@ class DeviceModelAdmin(admin.ModelAdmin):
 
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
+    name = 'Device'
     list_display = ['device_name', 'ip_address', 'model_name_display']
     search_fields = ['device_name', 'ip_address']
     autocomplete_fields = ['device_model', 'author']
