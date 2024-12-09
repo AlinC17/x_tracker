@@ -21,7 +21,7 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }}
         port: 22
         script: |
-          cd /apps/x_tracker
+          cd ~/apps/x_tracker
           git pull origin main
           docker compose up --build -d
           
